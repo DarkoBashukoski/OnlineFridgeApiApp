@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ingredientRow"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/ingredientQuantityInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:layout_weight="1"
+        android:hint="Quantity" />
+
+    <EditText
+        android:id="@+id/ingredientNameInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:layout_weight="3"
+        android:hint="Ingredient Name" />
+
+    <ImageButton
+        android:id="@+id/deleteIngredientButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/delete" />
+</LinearLayout>
