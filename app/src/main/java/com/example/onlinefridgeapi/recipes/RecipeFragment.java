@@ -6,7 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +31,8 @@ import java.util.Map;
 public class RecipeFragment extends Fragment {
     private static final String URL = "https://onlinefridge.azurewebsites.net/api/Recipe";
 
-
+    private RelativeLayout mainRecipeLayout;
+    private ConstraintLayout loadingLayout;
     private RequestQueue requestQueue;
     private RecyclerView recipeRecyclerView;
 
@@ -49,6 +52,8 @@ public class RecipeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_recipe, container, false);
+        mainRecipeLayout = root.findViewById(R.id.mainRecipeLayout);
+        loadingLayout = root.findViewById(R.id.loadingLayout);
         recipeRecyclerView = root.findViewById(R.id.recipeRecyclerView);
         FloatingActionButton addRecipeButton = root.findViewById(R.id.addRecipeButton);
 
@@ -87,6 +92,9 @@ public class RecipeFragment extends Fragment {
             recipeRecyclerView.setHasFixedSize(true);
             recipeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recipeRecyclerView.setAdapter(recipeAdapter);
+
+            loadingLayout.setVisibility(View.GONE);
+            mainRecipeLayout.setVisibility(View.VISIBLE);
         },
         error -> Log.d("REST error", error.getMessage())) {
             @Override

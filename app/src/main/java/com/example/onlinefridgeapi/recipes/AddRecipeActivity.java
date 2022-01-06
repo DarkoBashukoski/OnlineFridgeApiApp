@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -16,7 +18,6 @@ import android.widget.Toast;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.Toolbar;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.onlinefridgeapi.MainActivity;
 import com.example.onlinefridgeapi.R;
 import com.example.onlinefridgeapi.exceptions.EmptyInputException;
+import com.example.onlinefridgeapi.exceptions.InvalidIngredientException;
 import com.example.onlinefridgeapi.models.Recipe;
 
 import org.json.JSONArray;
@@ -35,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +53,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     private RequestQueue requestQueue;
     private HashMap<String, Integer> allIngredients;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,16 +61,20 @@ public class AddRecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_recipe);
 
         requestQueue = Volley.newRequestQueue(getApplicationContext());
-        getAllIngredients();
-
-        referenceViews();
-        addButtonListeners();
+        loadPage();
     }
 
     @Override
     public void onBackPressed() {
         startActivity(new Intent(this, MainActivity.class));
         finish();
+    }
+
+    public void loadRestOfPage() {
+        adapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice, new ArrayList<>(allIngredients.keySet()));
+
+        referenceViews();
+        addButtonListeners();
     }
 
     private void referenceViews() {
@@ -96,6 +104,9 @@ public class AddRecipeActivity extends AppCompatActivity {
             } catch (EmptyInputException e) {
                 Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
                 return false;
+            } catch (InvalidIngredientException e) {
+                Toast.makeText(this, "Please select ingredients from the dropdown menu", Toast.LENGTH_SHORT).show();
+                return false;
             }
         });
     }
@@ -113,10 +124,13 @@ public class AddRecipeActivity extends AppCompatActivity {
         View row = getLayoutInflater().inflate(R.layout.ingredient_row, null);
         AppCompatImageButton deleteIngredientButton = row.findViewById(R.id.deleteIngredientButton);
         deleteIngredientButton.setOnClickListener(v -> addIngredientLayout.removeView((View) v.getParent()));
+        AutoCompleteTextView ingredientNameInput = row.findViewById(R.id.ingredientNameInput);
+        ingredientNameInput.setAdapter(adapter);
+        ingredientNameInput.setThreshold(1);
         return row;
     }
 
-    private JSONObject getRecipeData() throws EmptyInputException {
+    private JSONObject getRecipeData() throws EmptyInputException, InvalidIngredientException {
         try {
             JSONObject output = new JSONObject();
             output.put("applicationUserID", null);
@@ -130,6 +144,9 @@ public class AddRecipeActivity extends AppCompatActivity {
             for (int i=0; i<addIngredientLayout.getChildCount(); i++) {
                 EditText ingredientNameInput = addIngredientLayout.getChildAt(i).findViewById(R.id.ingredientNameInput);
                 String ingredientName = checkForEmptyInput(ingredientNameInput.getText().toString());
+                if (!allIngredients.containsKey(ingredientName)) {
+                    throw new InvalidIngredientException("Invalid Ingredient");
+                }
                 EditText ingredientQuantityInput = addIngredientLayout.getChildAt(i).findViewById(R.id.ingredientQuantityInput);
                 JSONObject q = new JSONObject();
                 q.put("quantity", Float.parseFloat(checkForEmptyInput(ingredientQuantityInput.getText().toString())));
@@ -160,7 +177,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         }
     }
 
-    private void getAllIngredients() {
+    private void loadPage() {
         JsonArrayRequest request = new JsonArrayRequest(INGREDIENTS_URL,
         response -> {
             allIngredients = new HashMap<>();
@@ -172,8 +189,16 @@ public class AddRecipeActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+            loadRestOfPage();
         },
-        error -> Log.d("REST error", error.getMessage()));
+        error -> Log.d("REST error", error.getMessage())) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("ApiKey", "SecretKey");
+                return headers;
+            }
+        };
 
         requestQueue.add(request);
     }

@@ -19,15 +19,6 @@ public class Recipe {
         this.foodCategory = foodCategory;
     }
 
-    public Recipe(String userID, String name, String description, int cookTime, int prepTime, String foodCategory) {
-        this.userID = userID;
-        this.name = name;
-        this.description = description;
-        this.cookTime = cookTime;
-        this.prepTime = prepTime;
-        this.foodCategory = foodCategory;
-    }
-
     public static String foodCategoryFromInt(int i) {
         switch (i) {
             case 0: return "Breakfast";

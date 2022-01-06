@@ -13,7 +13,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -97,7 +96,7 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         },
         error -> Log.d("REST error", error.getMessage())) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("ApiKey", "SecretKey");
                 return headers;

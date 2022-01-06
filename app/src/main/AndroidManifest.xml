@@ -25,7 +25,8 @@
             android:exported="true" />
         <activity
             android:name=".recipes.AddRecipeActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
     </application>
 
 </manifest>
