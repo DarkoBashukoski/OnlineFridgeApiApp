@@ -13,6 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -24,7 +25,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class RecipeDetailsActivity extends AppCompatActivity {
     private Toolbar recipeDetailsToolbar;
@@ -92,7 +95,14 @@ public class RecipeDetailsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         },
-        error -> Log.d("REST error", error.getMessage()));
+        error -> Log.d("REST error", error.getMessage())) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("ApiKey", "SecretKey");
+                return headers;
+            }
+        };
 
         requestQueue.add(request);
     }

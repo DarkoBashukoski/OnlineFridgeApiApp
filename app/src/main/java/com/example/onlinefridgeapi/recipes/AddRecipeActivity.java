@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.Toolbar;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -35,6 +36,7 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Map;
 
 public class AddRecipeActivity extends AppCompatActivity {
     private static final String INGREDIENTS_URL = "https://onlinefridge.azurewebsites.net/api/Ingredient";
@@ -205,6 +207,14 @@ public class AddRecipeActivity extends AppCompatActivity {
                 }
                 assert response != null;
                 return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("ApiKey", "SecretKey");
+                headers.put("Content-Type", "application/json");
+                return headers;
             }
         };
 

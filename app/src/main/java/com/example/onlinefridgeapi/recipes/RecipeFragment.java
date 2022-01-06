@@ -22,7 +22,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RecipeFragment extends Fragment {
     private static final String URL = "https://onlinefridge.azurewebsites.net/api/Recipe";
@@ -86,7 +88,14 @@ public class RecipeFragment extends Fragment {
             recipeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recipeRecyclerView.setAdapter(recipeAdapter);
         },
-        error -> Log.d("REST error", error.getMessage()));
+        error -> Log.d("REST error", error.getMessage())) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("ApiKey", "SecretKey");
+                return headers;
+            }
+        };
 
         requestQueue.add(request);
     }
